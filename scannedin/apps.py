@@ -1,6 +1,7 @@
 from django.apps import AppConfig
 
 
-class EzAttendanceConfig(AppConfig):
+class ScannedinConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'ez_attendance'
+    name = 'scannedin'
+    verbose_name = 'ScannedIn'
