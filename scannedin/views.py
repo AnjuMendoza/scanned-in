@@ -87,10 +87,6 @@ def logout_view(request):
 
 @login_required
 def quick_attendance_setup(request):
-    if getattr(request.user.profile, "role", None) != "professor":
-        messages.error(request, "Only professors can start quick attendance.")
-        return redirect("dashboard")
-
     form = QuickAttendanceSetupForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
@@ -106,10 +102,6 @@ def quick_attendance_setup(request):
 # Initialize attendance scanning session
 @login_required
 def start_quick_attendance(request):
-    if getattr(request.user.profile, "role", None) != "professor":
-        messages.error(request, "Only professors can start quick attendance.")
-        return redirect("dashboard")
-
     setup_data = request.session.get("quick_attendance_setup")
     if not setup_data:
         messages.error(request, "Please complete attendance setup first.")
