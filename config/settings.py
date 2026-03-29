@@ -25,7 +25,11 @@ SECRET_KEY = 'django-insecure-8t0iu4(%mx#7uzcq9bbp=8rwxg!&7$!b5r#ihtu8k!0-37rz2u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*', 'localhost']
+ALLOWED_HOSTS = ['*',
+                 "ez-attendance.onrender.com",
+                 "127.0.0.1",
+                 "localhost",
+                 ]
 
 
 # Application definition
@@ -121,3 +125,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Testing deployment through render.com
+CSRF_TRUSTED_ORIGINS = [
+    "https://ez-attendance.onrender.com",
+]
