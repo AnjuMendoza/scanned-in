@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
+import uuid
+
 
 # Basic course model
 class Course(models.Model):
@@ -9,6 +12,7 @@ class Course(models.Model):
 
     def __str__(self):
         return f"{self.course_code} - {self.course_name}"
+
 
 # User profile model for logins
 class UserProfile(models.Model):
@@ -29,3 +33,18 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.role}"
+
+
+class AttendanceSession(models.Model):
+    token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    created_at = models.DateTimeField(default=timezone.now)
+    is_active = models.BooleanField(default=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    professor = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="attendance_sessions"
+    )
+
+    def __str__(self):
+        return f"Session {self.token} by {self.professor.email}"

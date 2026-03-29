@@ -1,11 +1,19 @@
-from django.shortcuts import render, redirect
+import base64
+from datetime import timedelta
+from io import BytesIO
+
+import qrcode
+from django.http import HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
 from .forms import RegisterForm, LoginForm
-from .models import UserProfile
+from .models import UserProfile, AttendanceSession
 
 
 def home(request):
@@ -75,3 +83,50 @@ def logout_view(request):
     logout(request)
     messages.info(request, "You have been logged out.")
     return redirect("login")
+
+# Initialize attendance scanning session
+@login_required
+def start_quick_attendance(request):
+    # Optional safety: only professors can start sessions
+    if getattr(request.user.profile, "role", None) != "professor":
+        messages.error(request, "Only professors can start quick attendance.")
+        return redirect("dashboard")
+
+    # Set expiry (example: 15 minutes from now)
+    expiry_time = timezone.now() + timedelta(minutes=15)
+
+    session = AttendanceSession.objects.create(
+        professor=request.user,
+        expires_at=expiry_time
+    )
+
+    checkin_url = request.build_absolute_uri(
+        reverse("quick_checkin", args=[session.token])
+    )
+
+    qr_img = qrcode.make(checkin_url)
+    buffer = BytesIO()
+    qr_img.save(buffer, format="PNG")
+    qr_code_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+
+    return render(
+        request,
+        "scannedin/session_created.html",
+        {
+            "session": session,
+            "checkin_url": checkin_url,
+            "qr_code": qr_code_base64,
+        },
+    )
+
+def quick_checkin(request, token):
+    session = get_object_or_404(AttendanceSession, token=token, is_active=True)
+
+    if session.expires_at and timezone.now() > session.expires_at:
+        return HttpResponse("This attendance session has expired.")
+
+    return render(
+        request,
+        "scannedin/quick_checkin.html",
+        {"session": session},
+    )

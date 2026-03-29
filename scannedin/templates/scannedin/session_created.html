@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quick Attendance Session</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+    <main class="auth-page">
+        <section class="auth-card" style="max-width: 700px;">
+            <h1>Attendance Session Created</h1>
+            <p>Session token: <code>{{ session.token }}</code></p>
+            <p>Expires at: {{ session.expires_at }}</p>
+
+            <p><strong>Scan this QR code:</strong></p>
+            <img src="data:image/png;base64,{{ qr_code }}" alt="Attendance QR Code" style="max-width: 280px;" />
+
+            <p style="margin-top: 1rem;">
+                Direct link:
+                <a href="{{ checkin_url }}" target="_blank" rel="noopener noreferrer">{{ checkin_url }}</a>
+            </p>
+
+            <p style="margin-top: 1.5rem;">
+                <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+            </p>
+        </section>
+    </main>
+</body>
+</html>
