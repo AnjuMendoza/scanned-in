@@ -1,0 +1,10 @@
+asgiref==3.8.1
+Django==5.2.11
+djangorestframework==3.14.0
+pillow==12.1.1
+python-decouple==3.8
+pytz==2024.2
+qrcode==8.2
+sqlparse==0.5.2
+ua-parser==0.18.0
+user-agents==2.2.0
